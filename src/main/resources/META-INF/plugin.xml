@@ -38,6 +38,9 @@
         <psi.referenceContributor
                 language="JSON"
                 implementation="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"/>
+<!--        <completion.contributor-->
+<!--                language="JSON"-->
+<!--                implementationClass="com.gumingnc.mars_support.completion.AppJsonCompletionContributor"/>-->
         <!--        <lang.elementManipulator forClass="com.intellij.json.psi.JsonProperty" implementationClass="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"-->
         <!--        <fileType name="JSON" language="JSON" fileNames="src/app.json"/>-->
 
