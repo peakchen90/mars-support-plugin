@@ -1,0 +1,41 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.gumingnc.mars-support</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>Mars Support</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor url="https://www.gumingnc.com">gumingnc</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description>Mars App Support: IDE 辅助插件</description>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>JavaScript</depends>
+    <!--    <depends>com.intellij.modules.json</depends>-->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>
+        <!--        <lang.findUsagesProvider language="JSON" implementationClass="com.gumingnc.mars_support.reference.UsageProvider"/>-->
+        <psi.referenceContributor language="JSON"
+                                  implementation="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"/>
+        <!--        <lang.elementManipulator forClass="com.intellij.json.psi.JsonProperty" implementationClass="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"-->
+        <!--        <fileType name="JSON" language="JSON" fileNames="src/app.json"/>-->
+        <iconProvider implementation="com.gumingnc.mars_support.AppConfigIconProvider"/>
+    </extensions>
+    <actions>
+        <action id="test" class="com.gumingnc.mars_support.TestAction" text="测试" description="测试 action">
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+            <keyboard-shortcut keymap="$default" first-keystroke="meta shift 3"/>
+        </action>
+    </actions>
+</idea-plugin>
