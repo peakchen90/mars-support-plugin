@@ -1,5 +1,6 @@
 package com.gumingnc.mars_support.reference;
 
+import com.gumingnc.mars_support.utils.JsIndexUtil;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference;
@@ -31,28 +32,26 @@ class ComponentFileReference extends FileReference {
         PsiElement targetPsiElement = null;
 
         if (isLast() && context.isDirectory()) {
-            PsiFileSystemItem targetDir = null;
             for (var item : context.getChildren()) {
                 var fsItem = (PsiFileSystemItem) item;
+
                 // 省略索引文件
                 if (fsItem.isDirectory() && text.equals(fsItem.getName())) {
-                    targetDir = fsItem;
+                    for (var child : fsItem.getChildren()) {
+                        var file = ((PsiFileSystemItem) child).getVirtualFile();
+                        if (!file.isDirectory() && JsIndexUtil.isJsIndex(file.getName())) {
+                            targetPsiElement = child;
+                            break;
+                        }
+                    }
                     break;
                 }
-                // 省略文件后缀
-                if (!fsItem.isDirectory() && text.equals(fsItem.getVirtualFile().getNameWithoutExtension())) {
-                    targetPsiElement = fsItem;
-                    break;
-                }
-            }
 
-            if (targetDir != null) {
-                for (var item : targetDir.getChildren()) {
-                    var file = ((PsiFileSystemItem) item).getVirtualFile();
-                    var basename = file.getNameWithoutExtension();
-                    var ext = file.getExtension();
-                    if (!file.isDirectory() && "index".equals(basename) && ("tsx".equals(ext) || "ts".equals(ext) || "jsx".equals(ext) || "js".equals(ext))) {
-                        targetPsiElement = item;
+                // 省略文件后缀
+                if (!fsItem.isDirectory()) {
+                    var virtualFile = fsItem.getVirtualFile();
+                    if (text.equals(virtualFile.getNameWithoutExtension()) && JsIndexUtil.isJsExtension(virtualFile.getExtension())) {
+                        targetPsiElement = fsItem;
                         break;
                     }
                 }
@@ -79,6 +78,26 @@ class ComponentFileReference extends FileReference {
 
     @Override
     protected PsiElement rename(String newName) throws IncorrectOperationException {
+        // 如果可能，省略后缀或索引文件名
+        if (isLast() && newName != null) {
+            var lastReference = getLastFileReference();
+            if (lastReference != null) {
+                var oldExtname = new JsIndexUtil(lastReference.getText()).getExtension();
+                var indexUtil = new JsIndexUtil(newName);
+
+                // 之前没有后缀名
+                if (oldExtname.isEmpty() && indexUtil.isJsExtension()) {
+                    newName = indexUtil.removeExtension();
+                }
+            }
+        }
+
+        // 保证路径以 ./ 开始
+        if (newName != null && !newName.startsWith("./")) {
+            newName = "./" + newName;
+        }
+
+
         return super.rename(newName);
     }
 }
