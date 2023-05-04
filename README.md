@@ -1,7 +1,16 @@
 # mars-support-plugin
 
-Mars App 辅助插件（针对 Intellij 平台）
+A plugin that supports mars framework apps, provides a special icon for the `app.json` configuration file, and supports `component` path references.
 
-## 参考链接
+## Usage
+
+- In the `src/app.json` file, pressing `cmd/ctrl + click` in the `routes.componnet` field to navigate to the corresponding file
+- Rename the associated file, the `routes.component` field in the `app.json` file will also be modified
+
+## Required
+
+- Webstorm >= 2020.3
+
+## Reference
 
 - https://plugins.jetbrains.com/docs/intellij/intellij-platform.html
