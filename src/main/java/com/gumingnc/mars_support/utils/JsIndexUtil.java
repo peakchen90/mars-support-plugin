@@ -89,7 +89,7 @@ public class JsIndexUtil {
         this.path = path.trim();
     }
 
-    public ParsedPath parse() {
+    public @NotNull ParsedPath parse() {
         var parts = path.split("/");
 
         var dirname = "";
@@ -112,7 +112,7 @@ public class JsIndexUtil {
         }
 
         dirname = dirnameBuilder.toString();
-        if (!dirname.isEmpty() && dirname.charAt(dirname.length() - 1) == '/') {
+        if (dirname.endsWith("/")) {
             dirname = dirname.substring(0, dirname.length() - 1);
         }
 
@@ -163,7 +163,7 @@ public class JsIndexUtil {
         return path.substring(0, path.length() - ext.length() - 1);
     }
 
-    private static class ParsedPath {
+    public static class ParsedPath {
         public @NotNull String dirname = "";
         public @NotNull String basename = "";
         public @NotNull String basenameWithoutExt = "";

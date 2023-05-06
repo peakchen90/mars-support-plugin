@@ -16,7 +16,7 @@ public class AppJsonReferenceContributor extends PsiReferenceContributor {
                 final var literalElement = (JsonStringLiteral) element;
                 var property = literalElement.getParent();
 
-                if (property.getLastChild() == literalElement && AppConfigUtil.checkRoutesComponentProperty(property)) {
+                if (property.getLastChild() == literalElement && AppConfigUtil.checkRoutesComponentProperty(property, true)) {
                     var referenceSet = new ComponentPathReferenceSet(literalElement);
                     return referenceSet.getAllReferences();
                 }

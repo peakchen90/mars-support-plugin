@@ -55,10 +55,14 @@ public class AppConfigUtil {
         return null;
     }
 
-    /**
-     * 判断是 routes component property
-     */
     public static boolean checkRoutesComponentProperty(PsiElement element) {
+        return checkRoutesComponentProperty(element, false);
+    }
+
+    /**
+     * 判断是 routes[n].component property
+     */
+    public static boolean checkRoutesComponentProperty(PsiElement element, boolean checkPosition) {
         if (!(element instanceof JsonProperty)) {
             return false;
         }
@@ -71,15 +75,65 @@ public class AppConfigUtil {
             parent = parent.getParent(); // routes array
             if (parent instanceof JsonArray) {
                 parent = parent.getParent(); // route property
-                if (parent instanceof JsonProperty && "routes".equals(((JsonProperty) parent).getName())) {
-                    parent = parent.getParent();
-                    if (parent instanceof JsonObject) {
-                        parent = parent.getParent(); // JSONFile(<root>/src/app.json)
-                        if (parent instanceof JsonFile) {
-                            return AppConfigUtil.getAppJsonFile(parent) != null;
-                        }
-                    }
+                return checkRoutesProperty(parent, checkPosition);
+            }
+        }
+
+        return false;
+    }
+
+
+    public static boolean checkRoutesPathProperty(PsiElement element) {
+        return checkRoutesPathProperty(element, false);
+    }
+
+    /**
+     * 判断是 routes[n].path property
+     */
+    public static boolean checkRoutesPathProperty(PsiElement element, boolean checkPosition) {
+        if (!(element instanceof JsonProperty)) {
+            return false;
+        }
+        if (!("path".equals(((JsonProperty) element).getName()))) {
+            return false;
+        }
+
+        var parent = element.getParent();
+        if (parent instanceof JsonObject) {
+            parent = parent.getParent(); // routes array
+            if (parent instanceof JsonArray) {
+                parent = parent.getParent(); // route property
+                return checkRoutesProperty(parent, checkPosition);
+            }
+        }
+
+        return false;
+    }
+
+
+    public static boolean checkRoutesProperty(PsiElement element) {
+        return checkRoutesProperty(element, false);
+    }
+
+    /**
+     * 判断是 routes property
+     */
+    public static boolean checkRoutesProperty(PsiElement element, boolean checkPosition) {
+        if (!(element instanceof JsonProperty)) {
+            return false;
+        }
+        if (!("routes".equals(((JsonProperty) element).getName()))) {
+            return false;
+        }
+
+        var parent = element.getParent();
+        if (parent instanceof JsonObject) {
+            parent = parent.getParent(); // JSONFile(<root>/src/app.json)
+            if (parent instanceof JsonFile) {
+                if (checkPosition) {
+                    return AppConfigUtil.getAppJsonFile(parent) != null;
                 }
+                return true;
             }
         }
 

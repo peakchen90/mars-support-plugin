@@ -49,8 +49,8 @@
                 implementation="com.gumingnc.mars_support.references.AppJsonReferenceContributor"/>
         <localInspection
                 language="JSON"
-                implementationClass="com.gumingnc.mars_support.inspections.ComponentPathInspection"
-                displayName="Routes component path"
+                implementationClass="com.gumingnc.mars_support.inspections.ConfigRoutesInspection"
+                displayName="Config routes"
                 groupName="Mars"
                 enabledByDefault="true"
                 level="ERROR"

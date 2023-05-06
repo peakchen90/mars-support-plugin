@@ -11,7 +11,9 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiFile;
 import org.jetbrains.annotations.NotNull;
 
-public class ComponentPathInspection extends LocalInspectionTool {
+import java.util.HashSet;
+
+public class ConfigRoutesInspection extends LocalInspectionTool {
     private final RemoveWhitespaceQuickFix removeWhitespaceQuickFix = new RemoveWhitespaceQuickFix();
     private final ConvertRelativePathQuickFix convertRelativePathQuickFix = new ConvertRelativePathQuickFix();
     private final ShorterPathQuickFix shorterPathQuickFix = new ShorterPathQuickFix();
@@ -24,7 +26,8 @@ public class ComponentPathInspection extends LocalInspectionTool {
             return PsiElementVisitor.EMPTY_VISITOR;
         }
 
-        var context = appJsonFile.getParent();
+        final var context = appJsonFile.getParent();
+        final var routePathSet = new HashSet<String>();
 
         return new JsonElementVisitor() {
             @Override
@@ -33,7 +36,7 @@ public class ComponentPathInspection extends LocalInspectionTool {
                     // 必须为字符串
                     var valueExpression = o.getLastChild();
                     if (!(valueExpression instanceof JsonStringLiteral)) {
-                        holder.registerProblem(valueExpression, "Component should be a string");
+                        holder.registerProblem(valueExpression, "Route component should be a string");
                         return;
                     }
 
@@ -41,7 +44,7 @@ public class ComponentPathInspection extends LocalInspectionTool {
                     var value = ((JsonStringLiteral) valueExpression).getValue();
                     var trimValue = value.trim();
                     if (trimValue.isEmpty()) {
-                        holder.registerProblem(valueExpression, "Component should be a non-empty string");
+                        holder.registerProblem(valueExpression, "Route component should be a non-empty string");
                         return;
                     }
 
@@ -53,19 +56,48 @@ public class ComponentPathInspection extends LocalInspectionTool {
                     // 路径不存在
                     var target = JsIndexUtil.resolveIndexFile(context, trimValue);
                     if (target == null) {
-                        holder.registerProblem(valueExpression, "Cannot resolve component: " + trimValue);
+                        holder.registerProblem(valueExpression, "Cannot resolve route component: " + trimValue);
                         return;
                     }
 
                     // 路径可以更短
                     var indexUtil = new JsIndexUtil(trimValue);
-                    if (indexUtil.hasJsExtension() || indexUtil.getBasenameWithoutExt().equals("index")) {
-                        holder.registerProblem(valueExpression, "Path can be shorter", ProblemHighlightType.WARNING, shorterPathQuickFix);
+                    var parsedPath = indexUtil.parse();
+                    if (indexUtil.hasJsExtension() || parsedPath.basenameWithoutExt.equals("index") || trimValue.endsWith("/")) {
+                        holder.registerProblem(valueExpression, "Route component can be shorter", ProblemHighlightType.WARNING, shorterPathQuickFix);
                     }
 
                     // 路径不以 ./ 开始
                     if (!trimValue.startsWith("./") && !trimValue.startsWith("../")) {
-                        holder.registerProblem(valueExpression, "Component should start with ./", convertRelativePathQuickFix);
+                        holder.registerProblem(valueExpression, "Route component should start with ./", convertRelativePathQuickFix);
+                    }
+                } else if (AppConfigUtil.checkRoutesPathProperty(o)) {
+                    var valueExpression = o.getLastChild();
+                    if (!(valueExpression instanceof JsonStringLiteral)) {
+                        holder.registerProblem(valueExpression, "Route path should be a string");
+                        return;
+                    }
+
+                    var value = ((JsonStringLiteral) valueExpression).getValue();
+                    if (value.isEmpty()) {
+                        holder.registerProblem(valueExpression, "Route path should be a non-empty string");
+                        return;
+                    }
+
+                    if (value.matches(".*?\\s.*")) {
+                        holder.registerProblem(valueExpression, "Route path cannot contains whitespaces");
+                        return;
+                    }
+
+                    if (routePathSet.contains(value)) {
+                        holder.registerProblem(valueExpression, "Duplicate route path: " + value);
+                        return;
+                    }
+                    routePathSet.add(value);
+                } else if (AppConfigUtil.checkRoutesProperty(o)) {
+                    var valueExpression = o.getLastChild();
+                    if (!(valueExpression instanceof JsonArray)) {
+                        holder.registerProblem(valueExpression, "Routes should be an array");
                     }
                 }
             }
@@ -146,6 +178,9 @@ public class ComponentPathInspection extends LocalInspectionTool {
 
             if (!newValue.startsWith("./")) {
                 newValue = "./" + newValue;
+            }
+            if (newValue.endsWith("/")) {
+                newValue = newValue.substring(0, newValue.length() - 1);
             }
 
             var newElement = generator.createStringLiteral(newValue);
