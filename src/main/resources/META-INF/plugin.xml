@@ -44,22 +44,20 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <iconProvider implementation="com.gumingnc.mars_support.AppConfigIconProvider"/>
-        <!--        <notificationGroup id="Custom Notification Group" displayType="BALLOON"/>-->
-        <!--        <lang.findUsagesProvider language="JSON" implementationClass="com.gumingnc.mars_support.reference.UsageProvider"/>-->
         <psi.referenceContributor
                 language="JSON"
-                implementation="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"/>
-<!--        <completion.contributor-->
-<!--                language="JSON"-->
-<!--                implementationClass="com.gumingnc.mars_support.completion.AppJsonCompletionContributor"/>-->
-        <!--        <lang.elementManipulator forClass="com.intellij.json.psi.JsonProperty" implementationClass="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"-->
-        <!--        <fileType name="JSON" language="JSON" fileNames="src/app.json"/>-->
+                implementation="com.gumingnc.mars_support.references.AppJsonReferenceContributor"/>
+        <localInspection
+                language="JSON"
+                implementationClass="com.gumingnc.mars_support.inspections.ComponentPathInspection"
+                displayName="Routes component path"
+                groupName="Mars"
+                enabledByDefault="true"
+                level="ERROR"
+        />
 
     </extensions>
-    <!--    <actions>-->
-    <!--        <action id="test" class="com.gumingnc.mars_support.TestAction" text="测试" description="测试 action">-->
-    <!--            <add-to-group group-id="ToolsMenu" anchor="first"/>-->
-    <!--            <keyboard-shortcut keymap="$default" first-keystroke="meta shift 3"/>-->
-    <!--        </action>-->
-    <!--    </actions>-->
+
+    <actions>
+    </actions>
 </idea-plugin>

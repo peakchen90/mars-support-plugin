@@ -1,4 +1,4 @@
-package com.gumingnc.mars_support.completion;
+package com.gumingnc.mars_support.completions;
 
 import com.intellij.codeInsight.completion.*;
 import com.intellij.patterns.PlatformPatterns;

@@ -12,7 +12,7 @@ public class AppConfigIconProvider extends IconProvider {
     @Override
     @Nullable
     public Icon getIcon(@NotNull PsiElement element, int flags) {
-        if (AppConfigUtil.checkAppJson(element)) {
+        if (AppConfigUtil.getAppJsonFile(element) != null) {
             return Icons.AppConfig;
         }
         return null;
