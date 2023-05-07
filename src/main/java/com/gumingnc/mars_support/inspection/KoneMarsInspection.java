@@ -11,6 +11,10 @@ public class KoneMarsInspection extends LocalInspectionTool {
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         final var d = PsiElementVisitor.EMPTY_VISITOR;
 
+        if (!KoneConfigUtil.isConfigFile(holder.getFile())) {
+            return d;
+        }
+
         var marConfig = KoneConfigUtil.resolveMarsConfig(holder.getFile());
         if (marConfig != null) {
             if (!(marConfig.mars.getLastChild() instanceof JsonObject)) {

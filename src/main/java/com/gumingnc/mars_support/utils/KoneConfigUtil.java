@@ -25,6 +25,13 @@ public class KoneConfigUtil {
         return root.findFile(FileName);
     }
 
+    public static boolean isConfigFile(@Nullable PsiFile file) {
+        if (file == null) {
+            return false;
+        }
+        return resolveConfigFile(file) == file;
+    }
+
     public static @Nullable MarsConfig resolveMarsConfig(@Nullable PsiElement element) {
         isResolveMarsConfig = true;
 

@@ -16,6 +16,7 @@ public class ComponentExportLineMarkerProvider extends RelatedItemLineMarkerProv
     @Override
     protected void collectNavigationMarkers(@NotNull PsiElement element, @NotNull Collection<? super RelatedItemLineMarkerInfo<?>> result) {
         super.collectNavigationMarkers(element, result);
+
         if (!(element instanceof ES6ExportDefaultAssignment)) {
             return;
         }
