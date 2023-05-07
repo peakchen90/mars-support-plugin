@@ -20,6 +20,8 @@
         <ul>
             <li>In the <code>src/app.json</code> file, pressing <code>cmd/ctrl + click</code> in the <code>routes.componnet</code> field to navigate to the corresponding file</li>
             <li>Rename the associated file, the <code>routes.component</code> field in the <code>app.json</code> file will also be modified</li>
+            <li>Support inspect for <code>routes</code> in <code>src/app.json</code> file</li>
+            <li>Route component module support autocompletion</li>
         </ul>
 
         <h3>Required</h3>

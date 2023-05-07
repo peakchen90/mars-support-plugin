@@ -6,6 +6,8 @@ A plugin that supports mars framework apps, provides a special icon for the `app
 
 - In the `src/app.json` file, pressing `cmd/ctrl + click` in the `routes.componnet` field to navigate to the corresponding file
 - Rename the associated file, the `routes.component` field in the `app.json` file will also be modified
+- Support inspect for `routes` in `src/app.json` file
+- Route component module support autocompletion
 
 ## Required
 
