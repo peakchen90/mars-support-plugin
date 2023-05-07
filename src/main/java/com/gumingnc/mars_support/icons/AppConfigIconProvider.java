@@ -1,4 +1,4 @@
-package com.gumingnc.mars_support;
+package com.gumingnc.mars_support.icons;
 
 import com.gumingnc.mars_support.utils.AppConfigUtil;
 import com.intellij.ide.IconProvider;
@@ -13,7 +13,7 @@ public class AppConfigIconProvider extends IconProvider {
     @Nullable
     public Icon getIcon(@NotNull PsiElement element, int flags) {
         if (AppConfigUtil.getAppJsonFile(element) != null) {
-            return Icons.AppConfig;
+            return Icons.Launch;
         }
         return null;
     }

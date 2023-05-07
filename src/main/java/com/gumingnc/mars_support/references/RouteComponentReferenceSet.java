@@ -27,7 +27,8 @@ public class RouteComponentReferenceSet extends FileReferenceSet {
         }
 
         @Override
-        protected void innerResolveInContext(@NotNull String text, @NotNull PsiFileSystemItem context, Collection<ResolveResult> result, boolean caseSensitive) {
+        protected void innerResolveInContext(@NotNull String text, @NotNull PsiFileSystemItem context, Collection<ResolveResult> result,
+                                             boolean caseSensitive) {
             PsiElement targetPsiElement = null;
 
             if (isLast() && context.isDirectory()) {

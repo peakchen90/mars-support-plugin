@@ -2,6 +2,7 @@ package com.gumingnc.mars_support.inspections;
 
 import com.gumingnc.mars_support.utils.AppConfigUtil;
 import com.gumingnc.mars_support.utils.FsUtil;
+import com.gumingnc.mars_support.utils.RoutesUtil;
 import com.intellij.codeInspection.*;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
@@ -29,6 +30,9 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
         final var context = appJsonFile.getParent();
         final var routePathSet = new HashSet<String>();
 
+        var routesUtil = RoutesUtil.getInstance(appJsonFile);
+        routesUtil.reset();
+
         return new JsonElementVisitor() {
             @Override
             public void visitProperty(@NotNull JsonProperty o) {
@@ -42,35 +46,41 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
 
                     // 不能为空字符
                     var value = ((JsonStringLiteral) valueExpression).getValue();
-                    var trimedValue = value.trim();
-                    if (trimedValue.isEmpty()) {
+                    var pureValue = value.trim();
+                    if (pureValue.isEmpty()) {
                         holder.registerProblem(valueExpression, "Route component should be a non-empty string");
                         return;
                     }
 
                     // 存在空白字符
-                    if (value.length() != trimedValue.length()) {
-                        holder.registerProblem(valueExpression, "Cannot be leading and trailing whitespace characters", ProblemHighlightType.WARNING, removeWhitespaceQuickFix);
+                    if (value.length() != pureValue.length()) {
+                        holder.registerProblem(valueExpression, "Cannot be leading and trailing whitespace characters",
+                                               ProblemHighlightType.WARNING, removeWhitespaceQuickFix);
                     }
 
                     // 路径不存在
-                    var target = FsUtil.resolveIndexFile(context, trimedValue);
+                    var target = FsUtil.resolveIndexFile(context, pureValue);
                     if (target == null) {
-                        holder.registerProblem(valueExpression, "Cannot resolve route component: " + trimedValue);
+                        holder.registerProblem(valueExpression, "Cannot resolve route component: " + pureValue);
                         return;
                     }
 
+                    var originalFile = target.getOriginalFile();
+                    routesUtil.set(originalFile, (JsonStringLiteral) valueExpression);
+
                     // 路径可以更短
-                    var fsUtil = new FsUtil(trimedValue);
+                    var fsUtil = new FsUtil(pureValue);
                     var parsedPath = fsUtil.parse();
-                    if (fsUtil.hasJsExtension() || parsedPath.basenameWithoutExt.equals("index") || trimedValue.endsWith("/")) {
-                        holder.registerProblem(valueExpression, "Route component can be shorter", ProblemHighlightType.WEAK_WARNING, shorterPathQuickFix);
+                    if (fsUtil.hasJsExtension() || parsedPath.basenameWithoutExt.equals("index") || pureValue.endsWith("/")) {
+                        holder.registerProblem(valueExpression, "Route component can be shorter", ProblemHighlightType.WEAK_WARNING,
+                                               shorterPathQuickFix);
                     }
 
                     // 路径需以 ./ 开始
-                    if (trimedValue.startsWith("../")) {
-                        holder.registerProblem(valueExpression, "Route component should in the src/ directory", ProblemHighlightType.WARNING);
-                    } else if (!trimedValue.startsWith("./")) {
+                    if (pureValue.startsWith("../")) {
+                        holder.registerProblem(valueExpression, "Route component should in the src/ directory",
+                                               ProblemHighlightType.WARNING);
+                    } else if (!pureValue.startsWith("./")) {
                         holder.registerProblem(valueExpression, "Route component should start with ./", convertRelativePathQuickFix);
                     }
 

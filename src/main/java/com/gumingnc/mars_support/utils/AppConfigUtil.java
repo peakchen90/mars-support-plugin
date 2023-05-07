@@ -8,10 +8,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class AppConfigUtil {
     public final static String[] FileNames = {"src", "app.json"};
-    public final static String KoneConfigName = "kone.config.json";
 
     /**
-     * 返回 src/app.json 配置文件
+     * 返回 src/app.json 配置文件，参数为 `src/app.json` JsonFile 及子节点
      */
     public static @Nullable PsiFile getAppJsonFile(PsiElement element) {
         PsiFile file;
@@ -48,7 +47,7 @@ public class AppConfigUtil {
             }
         }
 
-        if (current != null && current.getVirtualFile().findChild(KoneConfigName) != null) {
+        if (current != null && current.getVirtualFile().getPath().equals(current.getProject().getBasePath())) {
             return file;
         }
 

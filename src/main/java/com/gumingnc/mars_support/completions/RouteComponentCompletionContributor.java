@@ -20,7 +20,8 @@ class RouteComponentCompletionContributor extends CompletionContributor {
     public RouteComponentCompletionContributor() {
         extend(CompletionType.BASIC, PlatformPatterns.psiElement().inside(JsonStringLiteral.class), new CompletionProvider<>() {
             @Override
-            protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context, @NotNull CompletionResultSet result) {
+            protected void addCompletions(@NotNull CompletionParameters parameters, @NotNull ProcessingContext context,
+                                          @NotNull CompletionResultSet result) {
                 var originalElement = parameters.getOriginalPosition();
                 if (!(originalElement instanceof JsonStringLiteral)) {
                     originalElement = PsiTreeUtil.getParentOfType(originalElement, JsonStringLiteral.class, true);
@@ -28,7 +29,8 @@ class RouteComponentCompletionContributor extends CompletionContributor {
 
                 final var property = PsiTreeUtil.getParentOfType(originalElement, JsonProperty.class, true);
                 var appJsonFile = AppConfigUtil.getAppJsonFile(parameters.getOriginalFile());
-                if (appJsonFile != null && AppConfigUtil.checkRoutesComponentProperty(property) && property.getLastChild() == originalElement) {
+                if (appJsonFile != null && AppConfigUtil.checkRoutesComponentProperty(property) &&
+                    property.getLastChild() == originalElement) {
                     var element = parameters.getPosition();
                     var text = element.getText();
                     var cursorIndex = text.indexOf(CompletionUtilCore.DUMMY_IDENTIFIER);
