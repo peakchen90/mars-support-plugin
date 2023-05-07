@@ -88,7 +88,6 @@ class RouteComponentCompletionContributor extends CompletionContributor {
                                     public void handleInsert(@NotNull InsertionContext context, @NotNull LookupElement item) {
                                         var textRange = element.getTextRange();
                                         var start = textRange.getStartOffset() + cursorIndex - 1;
-                                        //                                        var start = textRange.getEndOffset() - CompletionUtilCore.DUMMY_IDENTIFIER.length() - 2; // 去掉引号和光标 "."
                                         var end = start + 1;
                                         var document = context.getDocument();
                                         var newText = new TextRange(start, end).replace(document.getText(), "");
