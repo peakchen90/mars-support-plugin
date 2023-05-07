@@ -64,13 +64,16 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
                     var indexUtil = new JsIndexUtil(trimValue);
                     var parsedPath = indexUtil.parse();
                     if (indexUtil.hasJsExtension() || parsedPath.basenameWithoutExt.equals("index") || trimValue.endsWith("/")) {
-                        holder.registerProblem(valueExpression, "Route component can be shorter", ProblemHighlightType.WARNING, shorterPathQuickFix);
+                        holder.registerProblem(valueExpression, "Route component can be shorter", ProblemHighlightType.WEAK_WARNING, shorterPathQuickFix);
                     }
 
-                    // 路径不以 ./ 开始
-                    if (!trimValue.startsWith("./") && !trimValue.startsWith("../")) {
+                    // 路径需以 ./ 开始
+                    if (trimValue.startsWith("../")) {
+                        holder.registerProblem(valueExpression, "Route component should in the src/ directory", ProblemHighlightType.WARNING);
+                    } else if (!trimValue.startsWith("./")) {
                         holder.registerProblem(valueExpression, "Route component should start with ./", convertRelativePathQuickFix);
                     }
+
                 } else if (AppConfigUtil.checkRoutesPathProperty(o)) {
                     var valueExpression = o.getLastChild();
                     if (!(valueExpression instanceof JsonStringLiteral)) {
@@ -84,8 +87,8 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
                         return;
                     }
 
-                    if (value.matches(".*?\\s.*")) {
-                        holder.registerProblem(valueExpression, "Route path cannot contains whitespaces");
+                    if (!value.matches("^(/[-\\w]+)+$")) {
+                        holder.registerProblem(valueExpression, "Route path cannot match: ^(/[-\\w]+)+$");
                         return;
                     }
 
@@ -93,7 +96,10 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
                         holder.registerProblem(valueExpression, "Duplicate route path: " + value);
                         return;
                     }
+
+                    // 收集 route path
                     routePathSet.add(value);
+
                 } else if (AppConfigUtil.checkRoutesProperty(o)) {
                     var valueExpression = o.getLastChild();
                     if (!(valueExpression instanceof JsonArray)) {
@@ -176,9 +182,10 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
                 newValue = indexUtil.removeExtension();
             }
 
-            if (!newValue.startsWith("./")) {
+            if (!newValue.startsWith("./") && !newValue.startsWith("../")) {
                 newValue = "./" + newValue;
             }
+
             if (newValue.endsWith("/")) {
                 newValue = newValue.substring(0, newValue.length() - 1);
             }
