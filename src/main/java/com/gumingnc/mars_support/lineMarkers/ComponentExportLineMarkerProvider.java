@@ -20,13 +20,20 @@ public class ComponentExportLineMarkerProvider extends RelatedItemLineMarkerProv
             return;
         }
 
-        var routesUtil = RoutesUtil.getInstance(element);
+        var info = RoutesUtil.getInstance(element).get(element.getContainingFile());
 
-        var componentLiteral = routesUtil.getComponentLiteral(element.getContainingFile());
-        if (componentLiteral != null) {
-            var builder = NavigationGutterIconBuilder.create(Icons.Mars).setTarget(componentLiteral)
-                                                     .setAlignment(GutterIconRenderer.Alignment.CENTER)
-                                                     .setTooltipText("Mars route component");
+        if (info != null) {
+            var componentDeclaration = info.componentDeclaration;
+            var path = info.path;
+            String tooltipText;
+            if (path.isEmpty()) {
+                tooltipText = "Route component";
+            } else {
+                tooltipText = "Route: " + path;
+            }
+
+            var builder = NavigationGutterIconBuilder.create(Icons.Mars).setTarget(componentDeclaration)
+                                                     .setAlignment(GutterIconRenderer.Alignment.CENTER).setTooltipText(tooltipText);
             result.add(builder.createLineMarkerInfo(element.getFirstChild()));
         }
     }

@@ -24,25 +24,23 @@ public class RoutesUtil {
     }
 
     public static class RouteInfo {
-        public @Nullable JsonStringLiteral componentDeclaration;
-        public @Nullable PsiFile componentFile;
-        public @Nullable String path;
+        public @NotNull JsonStringLiteral componentDeclaration;
+        public @NotNull PsiFile componentFile;
+        public @NotNull String path = "";
 
-        public RouteInfo(@Nullable JsonStringLiteral componentDeclaration, @Nullable PsiFile componentFile) {
+        public RouteInfo(@NotNull JsonStringLiteral componentDeclaration, @NotNull PsiFile componentFile) {
             this.componentFile = componentFile;
             this.componentDeclaration = componentDeclaration;
 
-            if (componentDeclaration != null) {
-                var property = componentDeclaration.getParent();
-                if (property instanceof JsonProperty) {
-                    var obj = property.getProject();
-                    if (obj instanceof JsonObject) {
-                        var pathProperty = ((JsonObject) obj).findProperty("path");
-                        if (pathProperty != null) {
-                            var valueExpr = pathProperty.getLastChild();
-                            if (valueExpr instanceof JsonStringLiteral) {
-                                this.path = ((JsonStringLiteral) valueExpr).getValue();
-                            }
+            var property = componentDeclaration.getParent();
+            if (property instanceof JsonProperty) {
+                var obj = property.getParent();
+                if (obj instanceof JsonObject) {
+                    var pathProperty = ((JsonObject) obj).findProperty("path");
+                    if (pathProperty != null) {
+                        var valueExpr = pathProperty.getLastChild();
+                        if (valueExpr instanceof JsonStringLiteral) {
+                            this.path = ((JsonStringLiteral) valueExpr).getValue();
                         }
                     }
                 }
@@ -113,7 +111,7 @@ public class RoutesUtil {
         return result;
     }
 
-    private @NotNull HashMap<PsiFile, RouteInfo> map;
+    private final @NotNull HashMap<PsiFile, RouteInfo> map;
 
     public RoutesUtil() {
         this.map = new HashMap<>();
@@ -130,14 +128,6 @@ public class RoutesUtil {
     public @Nullable RouteInfo get(PsiFile componentFile) {
         if (componentFile != null) {
             return map.get(componentFile);
-        }
-        return null;
-    }
-
-    public @Nullable JsonStringLiteral getComponentLiteral(PsiFile componentFile) {
-        var info = get(componentFile);
-        if (info != null) {
-            return info.componentDeclaration;
         }
         return null;
     }
