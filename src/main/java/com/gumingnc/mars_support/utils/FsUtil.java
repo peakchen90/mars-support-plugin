@@ -6,7 +6,7 @@ import com.intellij.psi.PsiFileSystemItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class JsIndexUtil {
+public class FsUtil {
     public static boolean isJsExtension(String ext) {
         if (ext == null) {
             return false;
@@ -21,6 +21,32 @@ public class JsIndexUtil {
         return baseName.equals("index.tsx") || baseName.equals("index.ts") || baseName.equals("index.jsx") || baseName.equals("index.js");
     }
 
+    // 解析到子目录
+    public static @Nullable PsiDirectory resolveSubdirectory(PsiDirectory context, String dirname) {
+        if (context == null) {
+            return null;
+        }
+        if (dirname == null || dirname.equals(".") || dirname.equals("./")) {
+            return context;
+        }
+        if (dirname.startsWith("./")) {
+            dirname = dirname.substring(2);
+        }
+
+        var parts = dirname.split("/");
+        for (var text : parts) {
+            if (context == null) return null;
+            if (text.isEmpty()) continue;
+            if (text.equals("..")) {
+                context = context.getParent();
+            } else {
+                context = context.findSubdirectory(text);
+            }
+        }
+
+        return context;
+    }
+
     // 解析 index 文件
     public static @Nullable PsiFile resolveIndexFile(PsiDirectory context, String filename) {
         if (context == null) {
@@ -33,23 +59,12 @@ public class JsIndexUtil {
             filename = filename.substring(2);
         }
 
-        var indexUtil = new JsIndexUtil(filename);
-        var parsedPath = indexUtil.parse();
+        var fsUtil = new FsUtil(filename);
+        var parsedPath = fsUtil.parse();
         var dirname = parsedPath.dirname;
         var basename = parsedPath.basename;
 
-        if (!parsedPath.dirname.isEmpty()) {
-            var parts = dirname.split("/");
-            for (var text : parts) {
-                if (context == null) return null;
-                if (text.isEmpty()) continue;
-                if (text.equals("..")) {
-                    context = context.getParent();
-                } else {
-                    context = context.findSubdirectory(text);
-                }
-            }
-        }
+        context = resolveSubdirectory(context, dirname);
 
         if (context == null) {
             return null;
@@ -62,7 +77,7 @@ public class JsIndexUtil {
         }
 
         // 带完整后缀名
-        if (indexUtil.hasJsExtension()) {
+        if (fsUtil.hasJsExtension()) {
             return context.findFile(basename);
         }
 
@@ -73,7 +88,7 @@ public class JsIndexUtil {
                 var name = virtualFile.getNameWithoutExtension();
                 var ext = virtualFile.getExtension();
 
-                if (basename.equals(name) && JsIndexUtil.isJsExtension(ext)) {
+                if (basename.equals(name) && FsUtil.isJsExtension(ext)) {
                     return (PsiFile) item;
                 }
             }
@@ -85,7 +100,7 @@ public class JsIndexUtil {
     @NotNull
     private final String path;
 
-    public JsIndexUtil(@NotNull String path) {
+    public FsUtil(@NotNull String path) {
         this.path = path.trim();
     }
 
@@ -152,7 +167,7 @@ public class JsIndexUtil {
 
     public boolean hasJsExtension() {
         var ext = getExtension();
-        return JsIndexUtil.isJsExtension(ext);
+        return FsUtil.isJsExtension(ext);
     }
 
     public @NotNull String removeExtension() {

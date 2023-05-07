@@ -1,7 +1,7 @@
 package com.gumingnc.mars_support.inspections;
 
 import com.gumingnc.mars_support.utils.AppConfigUtil;
-import com.gumingnc.mars_support.utils.JsIndexUtil;
+import com.gumingnc.mars_support.utils.FsUtil;
 import com.intellij.codeInspection.*;
 import com.intellij.codeInspection.util.IntentionFamilyName;
 import com.intellij.codeInspection.util.IntentionName;
@@ -42,35 +42,35 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
 
                     // 不能为空字符
                     var value = ((JsonStringLiteral) valueExpression).getValue();
-                    var trimValue = value.trim();
-                    if (trimValue.isEmpty()) {
+                    var trimedValue = value.trim();
+                    if (trimedValue.isEmpty()) {
                         holder.registerProblem(valueExpression, "Route component should be a non-empty string");
                         return;
                     }
 
                     // 存在空白字符
-                    if (value.length() != trimValue.length()) {
+                    if (value.length() != trimedValue.length()) {
                         holder.registerProblem(valueExpression, "Cannot be leading and trailing whitespace characters", ProblemHighlightType.WARNING, removeWhitespaceQuickFix);
                     }
 
                     // 路径不存在
-                    var target = JsIndexUtil.resolveIndexFile(context, trimValue);
+                    var target = FsUtil.resolveIndexFile(context, trimedValue);
                     if (target == null) {
-                        holder.registerProblem(valueExpression, "Cannot resolve route component: " + trimValue);
+                        holder.registerProblem(valueExpression, "Cannot resolve route component: " + trimedValue);
                         return;
                     }
 
                     // 路径可以更短
-                    var indexUtil = new JsIndexUtil(trimValue);
-                    var parsedPath = indexUtil.parse();
-                    if (indexUtil.hasJsExtension() || parsedPath.basenameWithoutExt.equals("index") || trimValue.endsWith("/")) {
+                    var fsUtil = new FsUtil(trimedValue);
+                    var parsedPath = fsUtil.parse();
+                    if (fsUtil.hasJsExtension() || parsedPath.basenameWithoutExt.equals("index") || trimedValue.endsWith("/")) {
                         holder.registerProblem(valueExpression, "Route component can be shorter", ProblemHighlightType.WEAK_WARNING, shorterPathQuickFix);
                     }
 
                     // 路径需以 ./ 开始
-                    if (trimValue.startsWith("../")) {
+                    if (trimedValue.startsWith("../")) {
                         holder.registerProblem(valueExpression, "Route component should in the src/ directory", ProblemHighlightType.WARNING);
-                    } else if (!trimValue.startsWith("./")) {
+                    } else if (!trimedValue.startsWith("./")) {
                         holder.registerProblem(valueExpression, "Route component should start with ./", convertRelativePathQuickFix);
                     }
 
@@ -173,13 +173,13 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
             var element = (JsonStringLiteral) descriptor.getPsiElement();
             var generator = new JsonElementGenerator(project);
             var rawValue = element.getValue().trim();
-            var indexUtil = new JsIndexUtil(rawValue);
+            var fsUtil = new FsUtil(rawValue);
             var newValue = "";
 
-            if (indexUtil.getBasenameWithoutExt().equals("index")) {
-                newValue = indexUtil.getDirname();
+            if (fsUtil.getBasenameWithoutExt().equals("index")) {
+                newValue = fsUtil.getDirname();
             } else {
-                newValue = indexUtil.removeExtension();
+                newValue = fsUtil.removeExtension();
             }
 
             if (!newValue.startsWith("./") && !newValue.startsWith("../")) {

@@ -43,10 +43,16 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <iconProvider implementation="com.gumingnc.mars_support.AppConfigIconProvider"/>
+        <!-- file icons -->
+        <iconProvider order="first" implementation="com.gumingnc.mars_support.AppConfigIconProvider"/>
+
+        <!-- references -->
         <psi.referenceContributor
+                order="first"
                 language="JSON"
                 implementation="com.gumingnc.mars_support.references.AppJsonReferenceContributor"/>
+
+        <!-- inspections -->
         <localInspection
                 language="JSON"
                 implementationClass="com.gumingnc.mars_support.inspections.ConfigRoutesInspection"
@@ -54,6 +60,13 @@
                 groupName="Mars"
                 enabledByDefault="true"
                 level="ERROR"
+        />
+
+        <!-- completions -->
+        <completion.contributor
+                language="JSON"
+                order="first"
+                implementationClass="com.gumingnc.mars_support.completions.RouteComponentCompletionContributor"
         />
 
     </extensions>

@@ -1,6 +1,6 @@
 package com.gumingnc.mars_support.references;
 
-import com.gumingnc.mars_support.utils.JsIndexUtil;
+import com.gumingnc.mars_support.utils.FsUtil;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.resolve.reference.impl.providers.FileReference;
@@ -11,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-public class ComponentPathReferenceSet extends FileReferenceSet {
-    public ComponentPathReferenceSet(@NotNull PsiElement element) {
+public class RouteComponentReferenceSet extends FileReferenceSet {
+    public RouteComponentReferenceSet(@NotNull PsiElement element) {
         super(element);
     }
 
@@ -31,7 +31,7 @@ public class ComponentPathReferenceSet extends FileReferenceSet {
             PsiElement targetPsiElement = null;
 
             if (isLast() && context.isDirectory()) {
-                targetPsiElement = JsIndexUtil.resolveIndexFile((PsiDirectory) context, text);
+                targetPsiElement = FsUtil.resolveIndexFile((PsiDirectory) context, text);
             }
 
             if (targetPsiElement != null) {
@@ -58,12 +58,12 @@ public class ComponentPathReferenceSet extends FileReferenceSet {
             if (isLast() && newName != null) {
                 var lastReference = getLastFileReference();
                 if (lastReference != null) {
-                    var oldExtname = new JsIndexUtil(lastReference.getText()).getExtension();
-                    var indexUtil = new JsIndexUtil(newName);
+                    var oldExtname = new FsUtil(lastReference.getText()).getExtension();
+                    var fsUtil = new FsUtil(newName);
 
                     // 之前没有后缀名
-                    if (oldExtname.isEmpty() && indexUtil.hasJsExtension()) {
-                        newName = indexUtil.removeExtension();
+                    if (oldExtname.isEmpty() && fsUtil.hasJsExtension()) {
+                        newName = fsUtil.removeExtension();
                     }
                 }
             }
