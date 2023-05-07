@@ -1,4 +1,4 @@
-package com.gumingnc.mars_support.references;
+package com.gumingnc.mars_support.reference;
 
 import com.gumingnc.mars_support.utils.FsUtil;
 import com.intellij.openapi.util.TextRange;

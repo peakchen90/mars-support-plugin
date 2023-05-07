@@ -1,4 +1,4 @@
-package com.gumingnc.mars_support.inspections;
+package com.gumingnc.mars_support.inspection;
 
 import com.gumingnc.mars_support.utils.AppConfigUtil;
 import com.gumingnc.mars_support.utils.FsUtil;

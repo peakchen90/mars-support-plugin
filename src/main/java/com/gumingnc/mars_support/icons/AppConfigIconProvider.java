@@ -13,7 +13,7 @@ public class AppConfigIconProvider extends IconProvider {
     @Nullable
     public Icon getIcon(@NotNull PsiElement element, int flags) {
         if (AppConfigUtil.getAppJsonFile(element) != null) {
-            return Icons.Launch;
+            return Icons.MarsIcon;
         }
         return null;
     }

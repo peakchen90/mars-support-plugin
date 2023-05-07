@@ -24,9 +24,10 @@ public class RoutesUtil {
     }
 
     public static class RouteInfo {
-        public @NotNull JsonStringLiteral componentDeclaration;
         public @NotNull PsiFile componentFile;
-        public @NotNull String path = "";
+        public @NotNull JsonStringLiteral componentDeclaration;
+        public @Nullable JsonStringLiteral pathDeclaration;
+        public @Nullable JsonStringLiteral descriptionDeclaration;
 
         public RouteInfo(@NotNull JsonStringLiteral componentDeclaration, @NotNull PsiFile componentFile) {
             this.componentFile = componentFile;
@@ -36,15 +37,43 @@ public class RoutesUtil {
             if (property instanceof JsonProperty) {
                 var obj = property.getParent();
                 if (obj instanceof JsonObject) {
+                    // find path property
                     var pathProperty = ((JsonObject) obj).findProperty("path");
                     if (pathProperty != null) {
                         var valueExpr = pathProperty.getLastChild();
                         if (valueExpr instanceof JsonStringLiteral) {
-                            this.path = ((JsonStringLiteral) valueExpr).getValue();
+                            this.pathDeclaration = (JsonStringLiteral) valueExpr;
+                        }
+                    }
+
+                    // find description property
+                    var descriptionProperty = ((JsonObject) obj).findProperty("description");
+                    if (descriptionProperty != null) {
+                        var valueExpr = descriptionProperty.getLastChild();
+                        if (valueExpr instanceof JsonStringLiteral) {
+                            this.descriptionDeclaration = (JsonStringLiteral) valueExpr;
                         }
                     }
                 }
             }
+        }
+
+        public @NotNull String getFilePath() {
+            return componentFile.getVirtualFile().getPath();
+        }
+
+        public @NotNull String getPath() {
+            if (pathDeclaration != null) {
+                return pathDeclaration.getValue();
+            }
+            return "";
+        }
+
+        public @NotNull String getDescription() {
+            if (descriptionDeclaration != null) {
+                return descriptionDeclaration.getValue();
+            }
+            return "";
         }
     }
 

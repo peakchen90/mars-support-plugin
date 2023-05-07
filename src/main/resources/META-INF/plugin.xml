@@ -46,33 +46,41 @@
         <!-- file icons -->
         <iconProvider order="first" implementation="com.gumingnc.mars_support.icons.AppConfigIconProvider"/>
 
-        <!-- references -->
+        <!-- reference -->
         <psi.referenceContributor
             order="first"
             language="JSON"
-            implementation="com.gumingnc.mars_support.references.AppJsonReferenceContributor"/>
+            implementation="com.gumingnc.mars_support.reference.AppJsonReferenceContributor"/>
 
-        <!-- inspections -->
+        <!-- inspection -->
         <localInspection
             language="JSON"
-            implementationClass="com.gumingnc.mars_support.inspections.ConfigRoutesInspection"
+            implementationClass="com.gumingnc.mars_support.inspection.ConfigRoutesInspection"
             displayName="Config routes"
             groupName="Mars"
             enabledByDefault="true"
             level="ERROR"
         />
 
-        <!-- completions -->
+        <!-- completion -->
         <completion.contributor
             language="JSON"
             order="first"
-            implementationClass="com.gumingnc.mars_support.completions.RouteComponentCompletionContributor"
+            implementationClass="com.gumingnc.mars_support.completion.RouteComponentCompletionContributor"
         />
 
-        <!-- line marker -->
+        <!-- code insight -->
         <codeInsight.lineMarkerProvider
             language="JavaScript"
-            implementationClass="com.gumingnc.mars_support.lineMarkers.ComponentExportLineMarkerProvider"
+            implementationClass="com.gumingnc.mars_support.codeInsight.ComponentExportLineMarkerProvider"
+        />
+        <codeInsight.inlayProvider
+            language="ECMAScript 6"
+            implementationClass="com.gumingnc.mars_support.codeInsight.RoutePathInlayProvider"
+        />
+        <codeInsight.inlayProvider
+            language="TypeScript"
+            implementationClass="com.gumingnc.mars_support.codeInsight.RoutePathInlayProvider"
         />
 
 

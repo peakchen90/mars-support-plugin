@@ -1,4 +1,4 @@
-package com.gumingnc.mars_support.lineMarkers;
+package com.gumingnc.mars_support.codeInsight;
 
 import com.gumingnc.mars_support.icons.Icons;
 import com.gumingnc.mars_support.utils.RoutesUtil;
@@ -24,17 +24,11 @@ public class ComponentExportLineMarkerProvider extends RelatedItemLineMarkerProv
 
         if (info != null) {
             var componentDeclaration = info.componentDeclaration;
-            var path = info.path;
-            String tooltipText;
-            if (path.isEmpty()) {
-                tooltipText = "Route component";
-            } else {
-                tooltipText = "Route: " + path;
-            }
+            var tooltipText = "Goto route definition";
 
-            var builder = NavigationGutterIconBuilder.create(Icons.Mars).setTarget(componentDeclaration)
+            var builder = NavigationGutterIconBuilder.create(Icons.MarsIcon).setTarget(componentDeclaration)
                                                      .setAlignment(GutterIconRenderer.Alignment.CENTER).setTooltipText(tooltipText);
-            result.add(builder.createLineMarkerInfo(element.getFirstChild()));
+            result.add(builder.createLineMarkerInfo(element));
         }
     }
 }
