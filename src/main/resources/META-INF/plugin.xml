@@ -55,8 +55,16 @@
         <!-- inspection -->
         <localInspection
             language="JSON"
-            implementationClass="com.gumingnc.mars_support.inspection.ConfigRoutesInspection"
-            displayName="Config routes"
+            implementationClass="com.gumingnc.mars_support.inspection.AppRoutesInspection"
+            displayName="App routes"
+            groupName="Mars"
+            enabledByDefault="true"
+            level="ERROR"
+        />
+        <localInspection
+            language="JSON"
+            implementationClass="com.gumingnc.mars_support.inspection.KoneMarsInspection"
+            displayName="Kone mars"
             groupName="Mars"
             enabledByDefault="true"
             level="ERROR"

@@ -1,6 +1,7 @@
 package com.gumingnc.mars_support.utils;
 
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiFileSystemItem;
 import org.jetbrains.annotations.NotNull;
@@ -95,6 +96,29 @@ public class FsUtil {
         }
 
         return null;
+    }
+
+    public static @Nullable PsiDirectory findRoot(@Nullable PsiElement element) {
+        if (element == null) {
+            return null;
+        }
+
+        final var projectPath = element.getProject().getBasePath();
+        PsiDirectory root = null;
+
+        try {
+            var current = element.getContainingFile().getParent();
+            while (current != null) {
+                if (current.getVirtualFile().getPath().equals(projectPath)) {
+                    root = current;
+                    break;
+                }
+                current = current.getParent();
+            }
+        } catch (Exception ignored) {
+        }
+
+        return root;
     }
 
     @NotNull

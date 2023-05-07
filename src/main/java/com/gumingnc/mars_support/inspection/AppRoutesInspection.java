@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 
-public class ConfigRoutesInspection extends LocalInspectionTool {
+public class AppRoutesInspection extends LocalInspectionTool {
     private final RemoveWhitespaceQuickFix removeWhitespaceQuickFix = new RemoveWhitespaceQuickFix();
     private final ConvertRelativePathQuickFix convertRelativePathQuickFix = new ConvertRelativePathQuickFix();
     private final ShorterPathQuickFix shorterPathQuickFix = new ShorterPathQuickFix();
@@ -22,7 +22,6 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
     @Override
     public @NotNull PsiElementVisitor buildVisitor(@NotNull ProblemsHolder holder, boolean isOnTheFly) {
         PsiFile appJsonFile = AppConfigUtil.getAppJsonFile(holder.getFile());
-
         if (appJsonFile == null) {
             return PsiElementVisitor.EMPTY_VISITOR;
         }
@@ -97,7 +96,7 @@ public class ConfigRoutesInspection extends LocalInspectionTool {
                         return;
                     }
 
-                    if (!value.matches("^(/[-\\w]+)+$")) {
+                    if (!RoutesUtil.RouteInfo.validatePath(value)) {
                         holder.registerProblem(valueExpression, "Route path cannot match: ^(/[-\\w]+)+$");
                         return;
                     }

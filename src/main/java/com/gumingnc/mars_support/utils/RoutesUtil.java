@@ -4,7 +4,6 @@ import com.intellij.json.psi.JsonArray;
 import com.intellij.json.psi.JsonObject;
 import com.intellij.json.psi.JsonProperty;
 import com.intellij.json.psi.JsonStringLiteral;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
@@ -28,6 +27,11 @@ public class RoutesUtil {
         public @NotNull JsonStringLiteral componentDeclaration;
         public @Nullable JsonStringLiteral pathDeclaration;
         public @Nullable JsonStringLiteral descriptionDeclaration;
+
+        public static boolean validatePath(String path) {
+            if (path == null) return false;
+            return path.matches("^(/[-\\w]+)+$");
+        }
 
         public RouteInfo(@NotNull JsonStringLiteral componentDeclaration, @NotNull PsiFile componentFile) {
             this.componentFile = componentFile;
@@ -69,6 +73,14 @@ public class RoutesUtil {
             return "";
         }
 
+        public @NotNull String getValidPath() {
+            var _path = getPath();
+            if (validatePath(_path)) {
+                return _path;
+            }
+            return "";
+        }
+
         public @NotNull String getDescription() {
             if (descriptionDeclaration != null) {
                 return descriptionDeclaration.getValue();
@@ -80,25 +92,7 @@ public class RoutesUtil {
     // 收集 routes
     public static RoutesUtil collectRouteMap(@Nullable PsiElement element) {
         var result = new RoutesUtil();
-        if (element == null) {
-            return result;
-        }
-
-        final var projectPath = element.getProject().getBasePath();
-        PsiDirectory root = null;
-
-        try {
-            var current = element.getContainingFile().getParent();
-            while (current != null) {
-                if (current.getVirtualFile().getPath().equals(projectPath)) {
-                    root = current;
-                    break;
-                }
-                current = current.getParent();
-            }
-        } catch (Exception ignored) {
-        }
-
+        var root = FsUtil.findRoot(element);
         if (root == null) {
             return result;
         }
@@ -114,9 +108,9 @@ public class RoutesUtil {
 
         var obj = PsiTreeUtil.findChildOfType(file, JsonObject.class, true);
         if (obj != null) {
-            var routes = obj.findProperty("routes");
-            if (routes != null) {
-                var routesExpr = routes.getLastChild();
+            var routesProperty = obj.findProperty("routes");
+            if (routesProperty != null) {
+                var routesExpr = routesProperty.getLastChild();
                 if (routesExpr instanceof JsonArray) {
                     for (var item : routesExpr.getChildren()) {
                         if (item instanceof JsonObject) {

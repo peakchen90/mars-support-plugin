@@ -1,5 +1,6 @@
 package com.gumingnc.mars_support.codeInsight;
 
+import com.gumingnc.mars_support.utils.KoneConfigUtil;
 import com.gumingnc.mars_support.utils.RoutesUtil;
 import com.intellij.codeInsight.hints.*;
 import com.intellij.lang.Language;
@@ -88,9 +89,17 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
                 var componentDeclaration = info.componentDeclaration;
                 var pathDeclaration = info.pathDeclaration;
                 var description = info.getDescription();
-                var path = info.getPath();
+                var path = info.getValidPath();
 
-                var hintText = "Path: " + (path.isEmpty() ? "invalid" : path);
+                var appId = "";
+                if (!KoneConfigUtil.isResolveMarsConfig) {
+                    KoneConfigUtil.resolveMarsConfig(element);
+                }
+                if (KoneConfigUtil.marsConfig != null) {
+                    appId = KoneConfigUtil.marsConfig.getValidAppId();
+                }
+
+                var hintText = "Path: " + ((appId.isEmpty() || path.isEmpty()) ? "invalid" : "/mars/" + appId + path);
                 if (!description.isEmpty()) {
                     hintText = String.format("%s (%s)", hintText, description);
                 }
