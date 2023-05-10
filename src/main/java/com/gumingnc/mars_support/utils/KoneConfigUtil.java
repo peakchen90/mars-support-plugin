@@ -12,9 +12,17 @@ import org.jetbrains.annotations.Nullable;
 public class KoneConfigUtil {
     public final static String FileName = "kone.config.json";
 
-    public static boolean isResolveMarsConfig = false;
+    private static boolean isResolveMarsConfig = false;
 
     public static @Nullable MarsConfig marsConfig;
+
+    public static @Nullable MarsConfig getMarsConfig(@Nullable PsiElement element) {
+        if (!isResolveMarsConfig) {
+            isResolveMarsConfig = true;
+            return resolveMarsConfig(element);
+        }
+        return marsConfig;
+    }
 
     public static @Nullable PsiFile resolveConfigFile(@Nullable PsiElement element) {
         var root = FsUtil.findRoot(element);
@@ -102,6 +110,12 @@ public class KoneConfigUtil {
                 return _type;
             }
             return "";
+        }
+
+        // 是否 mars 子应用类型
+        public boolean isAppType() {
+            var type = getValidType();
+            return type.isEmpty() || type.equals("app");
         }
     }
 }

@@ -85,19 +85,17 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
 
             var info = RoutesUtil.getInstance(element).get(element.getContainingFile());
             if (info != null) {
+                var marsConfig = KoneConfigUtil.getMarsConfig(element);
+                if (marsConfig == null || !marsConfig.isAppType()) {
+                    return false;
+                }
+                var appId = marsConfig.getValidAppId();
+
                 var start = defaultExportExpr.getFirstChild().getTextOffset();
                 var componentDeclaration = info.componentDeclaration;
                 var pathDeclaration = info.pathDeclaration;
                 var description = info.getDescription();
                 var path = info.getValidPath();
-
-                var appId = "";
-                if (!KoneConfigUtil.isResolveMarsConfig) {
-                    KoneConfigUtil.resolveMarsConfig(element);
-                }
-                if (KoneConfigUtil.marsConfig != null) {
-                    appId = KoneConfigUtil.marsConfig.getValidAppId();
-                }
 
                 var hintText = "Path: " + ((appId.isEmpty() || path.isEmpty()) ? "invalid" : "/mars/" + appId + path);
                 if (!description.isEmpty()) {

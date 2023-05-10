@@ -1,6 +1,7 @@
 package com.gumingnc.mars_support.codeInsight;
 
 import com.gumingnc.mars_support.icons.Icons;
+import com.gumingnc.mars_support.utils.KoneConfigUtil;
 import com.gumingnc.mars_support.utils.RoutesUtil;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerInfo;
 import com.intellij.codeInsight.daemon.RelatedItemLineMarkerProvider;
@@ -24,6 +25,11 @@ public class ComponentExportLineMarkerProvider extends RelatedItemLineMarkerProv
         var info = RoutesUtil.getInstance(element).get(element.getContainingFile());
 
         if (info != null) {
+            var marsConfig = KoneConfigUtil.getMarsConfig(element);
+            if (marsConfig == null || !marsConfig.isAppType()) {
+                return;
+            }
+
             var componentDeclaration = info.componentDeclaration;
             var tooltipText = "Goto route definition";
 
