@@ -77,6 +77,8 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
 
             if (element instanceof JSFileImpl) {
                 defaultExportExpr = ((JSFileImpl) element).findChildByClass(ES6ExportDefaultAssignment.class);
+            } else {
+                return true;
             }
 
             if (defaultExportExpr == null) {
@@ -101,10 +103,11 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
                 if (!description.isEmpty()) {
                     hintText = String.format("%s (%s)", hintText, description);
                 }
+
                 PsiElement target;
                 if (appId.isEmpty()) {
                     target = marsConfig.appId != null ? marsConfig.appId : marsConfig.mars;
-                } else if (path.isEmpty()) {
+                } else if (path.isEmpty() && pathDeclaration == null) {
                     target = componentDeclaration;
                 } else {
                     target = pathDeclaration;
