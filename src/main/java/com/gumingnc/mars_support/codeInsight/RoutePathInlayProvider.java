@@ -101,7 +101,14 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
                 if (!description.isEmpty()) {
                     hintText = String.format("%s (%s)", hintText, description);
                 }
-                var target = path.isEmpty() ? componentDeclaration : pathDeclaration;
+                PsiElement target;
+                if (appId.isEmpty()) {
+                    target = marsConfig.appId != null ? marsConfig.appId : marsConfig.mars;
+                } else if (path.isEmpty()) {
+                    target = componentDeclaration;
+                } else {
+                    target = pathDeclaration;
+                }
 
                 var factory = getFactory();
                 var presentation = factory.smallText(hintText);
