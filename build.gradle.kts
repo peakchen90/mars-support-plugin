@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.gumingnc"
-version = "1.0"
+version = "1.1.0"
 
 repositories {
     maven { setUrl("https://maven.aliyun.com/repository/public/") }
