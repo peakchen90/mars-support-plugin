@@ -134,7 +134,7 @@ public class RoutesUtil {
         return result;
     }
 
-    private final @NotNull HashMap<PsiFile, RouteInfo> map;
+    public final @NotNull HashMap<PsiFile, RouteInfo> map;
 
     public RoutesUtil() {
         this.map = new HashMap<>();

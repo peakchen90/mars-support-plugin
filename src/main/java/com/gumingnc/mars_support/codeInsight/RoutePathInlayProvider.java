@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 
 public class RoutePathInlayProvider implements InlayHintsProvider {
-    private static final SettingsKey settingsKey = new SettingsKey("mars.implicit.route.path.hint");
+    private static final SettingsKey settingsKey = new SettingsKey("mars.component.route.path.hint");
 
     @Override
     public boolean isVisibleInSettings() {
@@ -33,7 +33,7 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
     @NotNull
     @Override
     public String getName() {
-        return "Mars route hints";
+        return "Mars component route hints";
     }
 
     @Nullable
