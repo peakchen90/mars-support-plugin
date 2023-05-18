@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class RoutesUtil {
     private static @Nullable RoutesUtil instance;
@@ -120,7 +120,7 @@ public class RoutesUtil {
                                 if (componentValue instanceof JsonStringLiteral) {
                                     var targetFile = FsUtil.resolveIndexFile(srcDir, ((JsonStringLiteral) componentValue).getValue());
                                     if (targetFile != null) {
-                                        result.set(targetFile, (JsonStringLiteral) componentValue);
+                                        result.add(targetFile, (JsonStringLiteral) componentValue);
                                     }
                                 }
                             }
@@ -134,24 +134,27 @@ public class RoutesUtil {
         return result;
     }
 
-    public final @NotNull HashMap<PsiFile, RouteInfo> map;
+    public final @NotNull ArrayList<RouteInfo> result;
 
     public RoutesUtil() {
-        this.map = new HashMap<>();
+        this.result = new ArrayList<>();
     }
 
     public void reset() {
-        map.clear();
+        result.clear();
     }
 
-    public void set(@NotNull PsiFile componentFile, @NotNull JsonStringLiteral componentLiteral) {
-        map.put(componentFile, new RouteInfo(componentLiteral, componentFile));
+    public void add(@NotNull PsiFile componentFile, @NotNull JsonStringLiteral componentLiteral) {
+        result.add(new RouteInfo(componentLiteral, componentFile));
     }
 
-    public @Nullable RouteInfo get(PsiFile componentFile) {
-        if (componentFile != null) {
-            return map.get(componentFile);
+    public @NotNull ArrayList<RouteInfo> get(PsiFile componentFile) {
+        var res = new ArrayList<RouteInfo>();
+        for (var item: result) {
+            if (item.componentFile == componentFile) {
+                res.add(item);
+            }
         }
-        return null;
+        return res;
     }
 }

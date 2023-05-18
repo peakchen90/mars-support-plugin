@@ -22,14 +22,15 @@ public class ComponentExportLineMarkerProvider extends RelatedItemLineMarkerProv
             return;
         }
 
-        var info = RoutesUtil.getInstance(element).get(element.getContainingFile());
+        var routeInfos = RoutesUtil.getInstance(element).get(element.getContainingFile());
 
-        if (info != null) {
+        if (routeInfos.size() > 0) {
             var marsConfig = KoneConfigUtil.getMarsConfig(element);
             if (marsConfig == null || !marsConfig.isAppType()) {
                 return;
             }
 
+            var info = routeInfos.get(0);
             var componentDeclaration = info.componentDeclaration;
             var tooltipText = "Goto route definition";
 

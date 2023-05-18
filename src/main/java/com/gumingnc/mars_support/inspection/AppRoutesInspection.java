@@ -65,7 +65,7 @@ public class AppRoutesInspection extends LocalInspectionTool {
                     }
 
                     var originalFile = target.getOriginalFile();
-                    routesUtil.set(originalFile, (JsonStringLiteral) valueExpression);
+                    routesUtil.add(originalFile, (JsonStringLiteral) valueExpression);
 
                     // 路径可以更短
                     var fsUtil = new FsUtil(pureValue);

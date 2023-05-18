@@ -85,39 +85,41 @@ public class RoutePathInlayProvider implements InlayHintsProvider {
                 return false;
             }
 
-            var info = RoutesUtil.getInstance(element).get(element.getContainingFile());
-            if (info != null) {
+            var routeInfos = RoutesUtil.getInstance(element).get(element.getContainingFile());
+            if (routeInfos.size() > 0) {
                 var marsConfig = KoneConfigUtil.getMarsConfig(element);
                 if (marsConfig == null || !marsConfig.isAppType()) {
                     return false;
                 }
                 var appId = marsConfig.getValidAppId();
-
                 var start = defaultExportExpr.getFirstChild().getTextOffset();
-                var componentDeclaration = info.componentDeclaration;
-                var pathDeclaration = info.pathDeclaration;
-                var description = info.getDescription();
-                var path = info.getValidPath();
 
-                var hintText = "Path: " + ((appId.isEmpty() || path.isEmpty()) ? "invalid" : "/mars/" + appId + path);
-                if (!description.isEmpty()) {
-                    hintText = String.format("%s (%s)", hintText, description);
+                for (var info : routeInfos) {
+                    var componentDeclaration = info.componentDeclaration;
+                    var pathDeclaration = info.pathDeclaration;
+                    var description = info.getDescription();
+                    var path = info.getValidPath();
+
+                    var hintText = "Path: " + ((appId.isEmpty() || path.isEmpty()) ? "invalid" : "/mars/" + appId + path);
+                    if (!description.isEmpty()) {
+                        hintText = String.format("%s (%s)", hintText, description);
+                    }
+
+                    PsiElement target;
+                    if (appId.isEmpty()) {
+                        target = marsConfig.appId != null ? marsConfig.appId : marsConfig.mars;
+                    } else if (path.isEmpty() && pathDeclaration == null) {
+                        target = componentDeclaration;
+                    } else {
+                        target = pathDeclaration;
+                    }
+
+                    var factory = getFactory();
+                    var presentation = factory.smallText(hintText);
+                    presentation = factory.psiSingleReference(presentation, () -> target);
+                    presentation = factory.roundWithBackground(presentation);
+                    inlayHintsSink.addBlockElement(start, false, true, 100, presentation);
                 }
-
-                PsiElement target;
-                if (appId.isEmpty()) {
-                    target = marsConfig.appId != null ? marsConfig.appId : marsConfig.mars;
-                } else if (path.isEmpty() && pathDeclaration == null) {
-                    target = componentDeclaration;
-                } else {
-                    target = pathDeclaration;
-                }
-
-                var factory = getFactory();
-                var presentation = factory.smallText(hintText);
-                presentation = factory.psiSingleReference(presentation, () -> target);
-                presentation = factory.roundWithBackground(presentation);
-                inlayHintsSink.addBlockElement(start, false, true, 100, presentation);
             }
 
             return false;
